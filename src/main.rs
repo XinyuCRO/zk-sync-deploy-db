@@ -1,5 +1,6 @@
 mod commands;
 mod database;
+mod utils;
 
 use dotenv::dotenv;
 use tokio;
@@ -86,7 +87,7 @@ async fn main() {
         }
         Commands::Check => commands::check(&db).await,
         Commands::Sync => {
-            todo!("sync")
+            commands::sync().await
         }
     }
 }

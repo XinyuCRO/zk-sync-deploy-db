@@ -1,8 +1,8 @@
-use std::process::Command;
+use std::{process::Command, path::PathBuf};
 
-use crate::database;
+use crate::{database::*, utils::*};
 
-pub async fn drop(db: &database::Database) {
+pub async fn drop(db: &Database) {
     println!("Droping DB...");
     match db.drop().await {
         Ok(_) => println!("DB dropped"),
@@ -10,7 +10,7 @@ pub async fn drop(db: &database::Database) {
     }
 }
 
-pub async fn setup(db: &database::Database) {
+pub async fn setup(db: &Database) {
     println!("Setting up DB...");
     match db.setup().await {
         Ok(_) => println!("DB setup complete"),
@@ -18,7 +18,7 @@ pub async fn setup(db: &database::Database) {
     }
 }
 
-pub async fn check(db: &database::Database) {
+pub async fn check(db: &Database) {
     println!("Print DB tables...");
     db.print_all_tables().await;
 }
@@ -110,4 +110,19 @@ pub fn destroy() {
             eprintln!("Error: failed to execute rm command: {}", e);
         }
     }
+}
+
+pub async fn sync() {
+    println!("Syncing DB schemas...");
+    let url = "https://github.com/matter-labs/zksync-era/archive/refs/heads/main.zip";
+    println!("Downloading file from {}...", url);
+    let file_path = download_file(url, "main.zip").expect("Failed to download file");
+    println!("Unzipping file...");
+    let output_dir = unzip_file(&file_path).expect("Failed to unzip file");
+    println!("Download & unzip success, path: {:?}", output_dir);
+    println!("Moving migrations files...");
+    let target = PathBuf::from("./schema/migrations");
+    move_folder(&output_dir.join("zksync-era-main/core/lib/dal/migrations"), &target).expect("Failed to move folder");
+
+    println!("Sync complete");
 }
