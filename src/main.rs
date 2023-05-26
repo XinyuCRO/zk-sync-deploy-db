@@ -23,7 +23,11 @@ enum Commands {
 
     /// setup database
     #[command(arg_required_else_help = false)]
-    Setup,
+    Init,
+
+    /// re-init database, this will drop the tables and re-create them
+    #[command(arg_required_else_help = false)]
+    Reinit,
 
     /// start database
     #[command(arg_required_else_help = false)]
@@ -32,6 +36,10 @@ enum Commands {
     /// stop database
     #[command(arg_required_else_help = false)]
     Stop,
+
+    /// destroy database data dir
+    #[command(arg_required_else_help = false)]
+    Destroy,
 }
 
 #[tokio::main]
@@ -49,28 +57,26 @@ async fn main() {
     );
 
     match args.command {
-        Commands::Drop => {
-            println!("Droping DB...");
-            match db.drop().await {
-                Ok(_) => println!("DB dropped"),
-                Err(e) => println!("DP drop failed, {}", e),
-            }
-        }
-        Commands::Setup => {
-            println!("Setting up DB");
-            match db.setup().await {
-                Ok(_) => println!("DB setup complete"),
-                Err(e) => println!("DB setup failed, {}", e),
-            }
+        Commands::Drop => commands::drop(&db).await,
+        Commands::Init => commands::setup(&db).await,
+        Commands::Reinit => {
+            println!("Re-initing DB...");
+            commands::drop(&db).await;
+            commands::setup(&db).await;
         }
         Commands::Start => {
-            println!("Starting DB");
+            println!("Starting DB...");
             commands::stop();
             commands::start();
         }
         Commands::Stop => {
-            println!("Stopping DB");
+            println!("Stopping DB...");
             commands::stop();
+        }
+        Commands::Destroy => {
+            println!("Destroying DB...");
+            commands::stop();
+            commands::destroy();
         }
     }
 }
