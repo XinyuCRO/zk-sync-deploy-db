@@ -3,7 +3,7 @@ use sqlx::migrate::MigrateDatabase;
 use sqlx::postgres::PgPoolOptions;
 
 use sqlx::migrate::MigrateError;
-use sqlx::Error as SqlxError;
+use sqlx::{Error as SqlxError, Row};
 
 pub enum DatabaseError {
     Sqlx(SqlxError),
@@ -69,5 +69,28 @@ impl Database {
             .run(&pool)
             .await
             .map_err(|e| e.into())
+    }
+
+    pub async fn print_all_tables(&self) {
+        let pool = PgPoolOptions::new()
+            .max_connections(5)
+            .connect(&self.url)
+            .await
+            .unwrap();
+
+        let rows = sqlx::query(
+            r#"
+            SELECT * FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
+            "#,
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
+
+        println!("Tables:");
+        for row in rows {
+            let table_name: &str = row.get("tablename");
+            println!("  {}", table_name);
+        }
     }
 }

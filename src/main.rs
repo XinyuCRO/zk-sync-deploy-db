@@ -40,6 +40,12 @@ enum Commands {
     /// destroy database data dir
     #[command(arg_required_else_help = false)]
     Destroy,
+
+    /// check database status, print all tables
+    Check,
+
+    /// sync schemas changes from upstream
+    Sync,
 }
 
 #[tokio::main]
@@ -77,6 +83,10 @@ async fn main() {
             println!("Destroying DB...");
             commands::stop();
             commands::destroy();
+        }
+        Commands::Check => commands::check(&db).await,
+        Commands::Sync => {
+            todo!("sync")
         }
     }
 }

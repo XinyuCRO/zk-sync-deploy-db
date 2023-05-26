@@ -18,6 +18,11 @@ pub async fn setup(db: &database::Database) {
     }
 }
 
+pub async fn check(db: &database::Database) {
+    println!("Print DB tables...");
+    db.print_all_tables().await;
+}
+
 pub fn start() {
     // run command "mkdir -p ./volumes/postgres"
     let mkdir_result = Command::new("mkdir")
