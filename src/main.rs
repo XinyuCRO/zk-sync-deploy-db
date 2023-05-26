@@ -1,8 +1,6 @@
 mod commands;
 mod database;
 
-use std::io;
-
 use dotenv::dotenv;
 use tokio;
 
@@ -26,6 +24,14 @@ enum Commands {
     /// setup database
     #[command(arg_required_else_help = false)]
     Setup,
+
+    /// start database
+    #[command(arg_required_else_help = false)]
+    Start,
+
+    /// stop database
+    #[command(arg_required_else_help = false)]
+    Stop,
 }
 
 #[tokio::main]
@@ -34,7 +40,7 @@ async fn main() {
 
     let args = Cli::parse();
 
-    let datbase = database::Database::new(
+    let db = database::Database::new(
         std::env::var("POSTGRES_USER").unwrap(),
         std::env::var("POSTGRES_PASSWORD").unwrap(),
         std::env::var("POSTGRES_HOST").unwrap(),
@@ -44,23 +50,27 @@ async fn main() {
 
     match args.command {
         Commands::Drop => {
-            println!("Do you want to continue? (y/n)");
-
-            let mut input = String::new();
-            io::stdin()
-                .read_line(&mut input)
-                .expect("Failed to read line");
-
-            if input.trim() == "y" {
-                println!("Droping DB...");
-                datbase.drop().await.unwrap();
-            } else {
-                println!("Exiting...");
-                // Add your code here for when the user does not confirm with "y"
+            println!("Droping DB...");
+            match db.drop().await {
+                Ok(_) => println!("DB dropped"),
+                Err(e) => println!("DP drop failed, {}", e),
             }
         }
         Commands::Setup => {
             println!("Setting up DB");
+            match db.setup().await {
+                Ok(_) => println!("DB setup complete"),
+                Err(e) => println!("DB setup failed, {}", e),
+            }
+        }
+        Commands::Start => {
+            println!("Starting DB");
+            commands::stop();
+            commands::start();
+        }
+        Commands::Stop => {
+            println!("Stopping DB");
+            commands::stop();
         }
     }
 }
