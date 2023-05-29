@@ -126,3 +126,15 @@ pub async fn sync() {
 
     println!("Sync complete");
 }
+
+pub async fn migrate(db: &Database) {
+    println!("Migrating DB...");
+    match db.migrate().await {
+        Ok(_) => println!("DB migrated"),
+        Err(e) => println!("DB migrate failed, {}", e),
+    }
+}
+
+pub fn print(db: &Database) {
+    println!("{}", db.url);
+}

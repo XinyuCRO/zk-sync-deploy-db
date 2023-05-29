@@ -7,7 +7,7 @@ use tokio;
 
 use clap::{Parser, Subcommand};
 
-/// zkSync db setup CLI
+/// CLI struct for zkSync db setup
 #[derive(Debug, Parser)]
 #[command(name = "setup")]
 #[command(about = "zkSync db setup CLI", long_about = None)]
@@ -18,35 +18,35 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Commands {
-    /// drop database
-    #[command(arg_required_else_help = false)]
+    /// Drop database
     Drop,
 
-    /// setup database
-    #[command(arg_required_else_help = false)]
+    /// Setup database
     Init,
 
-    /// re-init database, this will drop the tables and re-create them
-    #[command(arg_required_else_help = false)]
+    /// Run database migrations
+    Migrate,
+
+    /// Re-init database, this will drop the tables and re-create them
     Reinit,
 
-    /// start database
-    #[command(arg_required_else_help = false)]
+    /// Start database
     Start,
 
-    /// stop database
-    #[command(arg_required_else_help = false)]
+    /// Stop database
     Stop,
 
-    /// destroy database data dir
-    #[command(arg_required_else_help = false)]
+    /// Destroy database data dir
     Destroy,
 
-    /// check database status, print all tables
+    /// Check database status, print all tables
     Check,
 
-    /// sync schemas changes from upstream
+    /// Sync schemas changes from upstream
     Sync,
+
+    /// Print connection link to the db
+    Print
 }
 
 #[tokio::main]
@@ -88,6 +88,12 @@ async fn main() {
         Commands::Check => commands::check(&db).await,
         Commands::Sync => {
             commands::sync().await
+        }
+        Commands::Migrate => {
+            commands::migrate(&db).await
+        }
+        Commands::Print => {
+            commands::print(&db)
         }
     }
 }
