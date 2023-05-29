@@ -1,44 +1,44 @@
 # zk-sync-deploy-db
 
-This repository contains the scripts to setup & deploy the zkSync database.
-
+zk-sync-deploy-db is a repository that contains scripts to set up and deploy the zkSync database. This README provides instructions on how to use the scripts.
 
 ## Usage
 
-Start the docker first
+Before using the scripts, start the Docker.
 
 ### Setup
 
+#### Environment Variables
 
-#### ENV
+Duplicate the `.env.example` file as `.env` and make the necessary changes to the fields.
 
-Duplicate `.env.example` as `.env`, and change the fields
+#### Starting the Database Docker Image 
 
-#### Start
-
-start the db docker image
+To start the database Docker image, run the following command:
 
 ```sh
 cargo run start
 ```
 
-#### Setup Database
+#### Setting up the Database
 
-Wait a few seconds for db to wake up, this command will create the database and run the migrations
+After the Docker image has started, create the database and run the migrations using the following command:
 
 ```sh
 cargo run init
 ```
 
-#### Check Setup
+#### Checking the Setup
 
-After setup the db, run this command to print all tables in the db, to check if success
+To check if the setup of the database was successful, run the following command to print all tables in the database:
 
 ```sh
 cargo run check
 ```
 
-#### Print connection url to the db
+#### Printing the Connection URL to the Database
+
+To print the connection URL to the database, run the following command:
 
 ```sh
 cargo run print
@@ -46,29 +46,38 @@ cargo run print
 
 ### Management
 
+#### Re-initializing the Database
 
-#### Re-init db
+To re-initialize the database, run the following command:
 
 ```sh
 cargo run reinit
 ```
 
-#### Stop the db
+#### Stopping the Database
+
+To stop the database, run the following command:
 
 ```sh
 cargo run stop
 ```
 
-#### Sync schema migrations from upstream
+#### Syncing Schema Migrations from Upstream
 
-This will sync the schema changes from https://github.com/matter-labs/zksync-era main branch
+To sync the schema changes from the main branch of https://github.com/matter-labs/zksync-era, runthe following command:
 
 ```sh
 cargo run sync
 ```
 
-#### Apply schema changes
+#### Applying Schema Changes
+
+To apply schema changes, run the following command:
 
 ```sh
 cargo run migrate
 ```
+
+## License
+
+zk-sync-deploy-db is licensed under [MIT License](https://github.com/matter-labs/zk-sync-deploy-db/blob/main/LICENSE).
