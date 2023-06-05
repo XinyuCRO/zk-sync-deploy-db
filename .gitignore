@@ -1,2 +1,6 @@
 
 volumes/
+
+target/
+
+.env
